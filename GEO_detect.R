@@ -301,6 +301,8 @@ if(args$enrich_analysis=T){
     pdf(paste0(GSEnumber,"_KEGG_dot.pdf"))
     dotplot(ekk)
     dev.off()
+write.table(as.data.frame(ekk), paste0(GSEnumber,"_KEGG.xls"),sep = "\t",na = "",row.names = F, col.names = T, quote = F)
+write.table(as.data.frame(ego), paste0(GSEnumber,"_GO.xls"),sep = "\t",na = "",row.names = F, col.names = T, quote = F)
   }else{
     stop("进行富集分析前，需先进行差异分析。请检查-a是否为T")
   }
