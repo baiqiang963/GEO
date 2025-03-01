@@ -112,7 +112,14 @@ Rscript geo_analysis.R \
 cd ./your_path
 wget https://ftp.ncbi.nlm.nih.gov/geo/series/GSE118nnn/GSE118370/matrix/GSE118370_series_matrix.txt.gz
 wget https://ftp.ncbi.nlm.nih.gov/geo/series/GSE118nnn/GSE118370/soft/GSE118370_family.soft.gz
-
+##### 如果使用此数据进行科学研究，请引用：
+Xu L, Lu C, Huang Y, Zhou J et al. SPINK1 promotes cell growth and metastasis of lung adenocarcinoma and acts as a novel prognostic biomarker. BMB Rep 2018 Dec;51(12):648-653.
+#### 📂 输入文件结构
+```
+./your_path/
+├── GSE118370_series_matrix.txt.gz
+├── GSE118370_family.soft.gz
+```
 #### 案例 1：基础分析流程
 ```bash
 # 预处理
@@ -127,8 +134,7 @@ Rscript geo_analysis.R -n GSE118370 -d ./your_path -a -e
 
 ## 📂 输出文件结构
 ```
-results/
-├── GSE12345_raw/            # 原始数据缓存
+./your_path/
 ├── GSE118370_matrix.csv      # 标准化表达矩阵（log2）
 ├── GSE118370_group.xls       # 样本分组信息
 ├── GSE118370_DiffEG.xls      # 差异基因表 (需 -a 参数)
