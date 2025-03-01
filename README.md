@@ -141,11 +141,13 @@ Rscript geo_analysis.R -n GSE118370 -d ./your_path -a -e
 ├── GSE118370_PCA.pdf         # PCA 可视化
 ├── volcano_plot.pdf          # 火山图
 ├── GO_enrichment/           # 富集分析结果 (需 -e 参数)
-│   ├── GO_barplot.pdf
-│   └── GO_dotplot.pdf
+│   ├── GSE118370_GO_barplot.pdf
+│   └── GSE118370_GO_dotplot.pdf
+│   └── GSE118370_GO.xls
 └── KEGG_enrichment/
-    ├── KEGG_barplot.pdf
-    └── KEGG_dotplot.pdf
+    ├── GSE118370_KEGG_barplot.pdf
+    └── GSE118370_KEGG_dotplot.pdf
+    └── GSE118370_KEGG.xls
 ```
 
 ## ⚠️ 注意事项
