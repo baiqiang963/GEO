@@ -24,8 +24,8 @@ library(dplyr)
 library(ggplot2)
 library(stringr)
 library(enrichplot)
-# You can run the following code to detect and install missing front-end R packages in R:
-
+###  You can run the following code to detect and install missing front-end R packages in R:
+```
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
 }
@@ -78,7 +78,7 @@ if (all(check_installed)) {
   failed_packages <- names(check_installed)[!check_installed]
   warning("\n❌ 以下包安装失败，请手动检查: ", paste(failed_packages, collapse = ", "))
 }
-
+```
 ## 📋 脚本功能
 
 - **预处理**：探针注释、表达矩阵标准化、离群样本检测
