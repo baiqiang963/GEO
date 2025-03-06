@@ -85,12 +85,13 @@ if (all(check_installed)) {
 - **差异分析**：limma 差异表达分析 + PCA/火山图/热图可视化
 - **富集分析**：一键生成 KEGG/GO 富集结果及图表
 - **每个步骤的文档报告**
+- **高级流程**：多个GEO数据的预处理与合并+差异分析+WGCNA+取交集基因+富集分析+PPI分析
 
 
 
 ## 🚀 快速开始
 
-### 基础命令
+### 单个GEO处理命令
 ```bash
 Rscript geo_analysis.R \
   --GSEnumber GSE118370 \    # 必填参数
@@ -99,42 +100,51 @@ Rscript geo_analysis.R \
   --enrich_analysis         # 启用富集分析
 ```
 
-### 📌 参数详解
+#### 📌 参数详解
 | 参数 | 缩写 | 类型 | 默认值 | 功能 |
 |------|------|------|--------|------|
 | `--GSEnumber` | `-n` | string | 必填 | GEO 数据集编号 (如 GSE118370) |
-| `--storage_dir` | `-d` | path | ./ | GEO矩阵输入和结果存储目录 |
+| `--storage_dir` | `-d` | path | 必填 | GEO矩阵输入和结果存储目录 |
 | `--GEO_variance_analysis` | `-a` | flag | FALSE | 启用差异表达分析 |
 | `--enrich_analysis` | `-e` | flag | FALSE | 启用富集分析 (需配合 -a) |
 
-### 🧪 使用示例
+### 多个GEO处理命令（高级流程）
+```bash
+Rscript geo_analysis.R \
+  --GSEnumber GSE118370 \    # 必填参数
+  --storage_dir ./results \  # 指定输出目录
+  --GEO_variance_analysis \ # 启用差异分析
+  --enrich_analysis         # 启用富集分析
+```
+
+### 🧪 单个GEO使用示例
 #### 数据准备
 cd ./your_path
 wget https://ftp.ncbi.nlm.nih.gov/geo/series/GSE118nnn/GSE118370/matrix/GSE118370_series_matrix.txt.gz
 wget https://ftp.ncbi.nlm.nih.gov/geo/series/GSE118nnn/GSE118370/soft/GSE118370_family.soft.gz
 ##### 如果使用此数据进行科学研究，请引用：
 Xu L, Lu C, Huang Y, Zhou J et al. SPINK1 promotes cell growth and metastasis of lung adenocarcinoma and acts as a novel prognostic biomarker. BMB Rep 2018 Dec;51(12):648-653.
-#### 📂 输入文件结构
+#### 📂 输入文件结构（./path_of_folder_including_GSE118370_files）
 ```
 ./your_path/
 ├── GSE118370_series_matrix.txt.gz
 ├── GSE118370_family.soft.gz
 ```
-#### 案例 1：基础分析流程
+#### 案例 1：数据处理流程
 ```bash
 # 预处理
-Rscript geo_analysis.R -n GSE118370 -d ./your_path
+Rscript geo_analysis.R -n GSE118370 -d ./path_of_folder_including_GSE118370_files
 ```
 
 #### 案例 2：完整分析流程
 ```bash
 # 预处理+差异分析+富集分析
-Rscript geo_analysis.R -n GSE118370 -d ./your_path -a -e
+Rscript geo_analysis.R -n GSE118370 -d ./path_of_folder_including_GSE118370_files -a -e
 ```
 
 ## 📂 输出文件结构
 ```
-./your_path/
+./path_of_folder_including_GSE118370_files
 ├── GSE118370_matrix.csv      # 标准化表达矩阵（log2）
 ├── GSE118370_group.xls       # 样本分组信息
 ├── GSE118370_DiffEG.xls      # 差异基因表 (需 -a 参数)
@@ -148,6 +158,19 @@ Rscript geo_analysis.R -n GSE118370 -d ./your_path -a -e
     ├── GSE118370_KEGG_barplot.pdf
     └── GSE118370_KEGG_dotplot.pdf
     └── GSE118370_KEGG.xls
+```
+
+### 🧪 多个GEO使用示例
+#### 数据准备
+#### 📂 输入文件结构（）
+#### 案例 1：分析流程
+```bash
+
+
+```
+## 📂 输出文件结构
+```
+
 ```
 
 ## ⚠️ 注意事项
