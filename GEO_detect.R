@@ -10,7 +10,7 @@ library(affy)      # Affymetrix芯片数据处理
 # 定义参数
 option_list <- list(
   make_option(c("-n", "--GSEnumber"), type = "character",help = "GSE编号(例如：GSE118370)"),
-  make_option(c("-d", "--storage_dir"), type = "character",default=getwd(),help = "GEO矩阵和注释存储路径"),
+  make_option(c("-d", "--storage_dir"), type = "character",help = "GEO矩阵和注释存储路径"),
   make_option(c("-a", "--GEO_variance_analysis"), action = "store_true", default = FALSE,help = "是否执行差异分析"),
   make_option(c("-e", "--enrich_analysis"), action = "store_true", default = FALSE,help = "是否执行富集分析")
   )
