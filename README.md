@@ -6,7 +6,7 @@
 4.GO和KEGG分析，
 5.PPI分析，
 6.免疫浸润分析。
-
+![](https://github.com/baiqiang963/GEO/blob/main/images/pipeline.png)
 ## 第一次运行前的环境准备
 ### R>=4.2.0
 ### 将PPI分析所需的蛋白参考文件下载到脚本所在目录中(9606是人类的蛋白参考文件代号)
