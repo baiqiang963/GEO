@@ -1,3 +1,5 @@
+suppressPackageStartupMessages({
+library(data.table)
 library(optparse)
 library(dplyr)
 library(tidyr)
@@ -6,7 +8,10 @@ library(stringr)
 library(janitor)
 library(GEOquery)  # GEO数据下载与解析
 library(limma)     # 差异表达分析
-library(affy)      # Affymetrix芯片数据处理
+library(affy)# Affymetrix芯片数据处理
+library(cli)
+  })
+
 # 定义参数
 option_list <- list(
   make_option(c("-n", "--GSEnumber"), type = "character",help = "GSE编号(例如：GSE118370)"),
@@ -14,6 +19,7 @@ option_list <- list(
   make_option(c("-a", "--GEO_variance_analysis"), action = "store_true", default = FALSE,help = "是否执行差异分析"),
   make_option(c("-e", "--enrich_analysis"), action = "store_true", default = FALSE,help = "是否执行富集分析")
   )
+
 parser <- OptionParser(option_list = option_list)
 args <- parse_args(parser)
 
@@ -22,54 +28,40 @@ if (is.null(args$GSEnumber)) {
   stop("必须指定--GSEnumber")
 }
 GSEnumber=args$GSEnumber
+if (is.null(args$storage_dir) || !dir.exists(args$storage_dir)) {
+  stop("必须指定有效的数据目录 --storage_dir")
+}
 output_dir=args$storage_dir
 setwd(output_dir)
-series_matrix_path=paste0(GSEnumber,"_series_matrix.txt.gz")
-f_soft=paste0(GSEnumber,"_family.soft.gz")
-
+series_matrix_path <- file.path(args$storage_dir, paste0(args$GSEnumber, "_series_matrix.txt.gz"))
+f_soft <- file.path(args$storage_dir, paste0(args$GSEnumber, "_family.soft.gz"))
+if (!file.exists(series_matrix_path)) {
+  stop("找不到矩阵文件: ", series_matrix_path)
+}
+if (!file.exists(f_soft)) {
+  stop("找不到注释文件: ", f_soft)
+}
 
 eSet <- getGEO(filename=series_matrix_path, destdir=output_dir,AnnotGPL = T,getGPL = F)
+exp_matrix<-exprs(eSet)
     # 提取临床信息
-    pd <- pData(eSet)
-    # 自动识别正常和肿瘤样本的分组脚本
-    # 输入：样本信息表 pd（行名为样本ID，如GSM3325818）
-    # 输出：分组向量 group 和样本信息增强后的 pd_with_group
-    
-    # --------------------- 方法1：基于标题特征识别 ---------------------
-    # 通过标题（title）中的关键词判断样本类型
-    pd$group <- ifelse(grepl("normal", pd$title, ignore.case = TRUE), "Normal", 
-                       ifelse(grepl("adenocarcinoma|tumor", pd$title, ignore.case = TRUE), "Tumor", NA))
-    
-    # --------------------- 方法2：基于组织特征列识别（更准确）---------------------
-    # 直接使用 characteristics_ch1 列的明确标注
-    pd$group <- ifelse(grepl("tissue: normal tissue", pd$characteristics_ch1), "Normal",
-                       ifelse(grepl("tissue: tumor tissue", pd$characteristics_ch1), "Tumor", NA))
-    
-    # --------------------- 结果验证 ---------------------
-    # 检查分组结果
-    table(pd$group, useNA = "always")
-    
-    # 输出带分组的样本信息（包含样本ID和分组）
-    pd_with_group <- data.frame(
-      sample_id = rownames(pd),
-      group = pd$group,
-      pd[, c("title", "characteristics_ch1")]  # 保留关键列用于人工复核
-    )
-    
-    # 查看前6行
-    head(pd_with_group)
+group_path <- file.path(args$storage_dir, paste0(args$GSEnumber, "_group.xls"))
+pd <- fread(group_path)
+rownames(pd)=pd$sample_id
+head(pd)
     
     # --------------------- 与表达矩阵对齐 ---------------------
-    # 确保表达矩阵列名与 pd 样本ID一致（重要！）
+    # 确保表达矩阵列名与 pd 样本ID一致
     exp_matrix <- exp_matrix[, rownames(pd)]  # exp_matrix 是你的表达矩阵
     
+if (!"group" %in% colnames(pd)) {
+      stop("分组列 'group' 不存在，请检查输入数据列名")
+    }
     # 创建分组因子向量（用于后续差异分析）
-    group <- factor(pd$group, levels = c("Normal", "Tumor"))
+    group <- factor(pd$group, levels = c("case", "control"))
     
     # 检查样本顺序是否一致
     identical(colnames(exp_matrix), rownames(pd))
-    write.table(pd_with_group,paste0(GSEnumber,"_group.xls"),
-                sep = "\t",na = "",row.names = F, col.names = T, quote = F)
     
     exp_ori0 <- exprs(eSet)
     identical(colnames(exp_ori0),rownames(pd))
@@ -100,67 +92,67 @@ eSet <- getGEO(filename=series_matrix_path, destdir=output_dir,AnnotGPL = T,getG
       tibble::rownames_to_column(var = "gene_symbol")
 
     rownames(exp_unique) <- exp_unique$gene_symbol
-    exp_matrix <- as.matrix(exp_unique[, -1])
-write.csv(exp_matrix,paste0(GSEnumber,"_matrix.csv"))
-#-----------------------------------------------------------------------#analysis
-    #exp_matrix矩阵，pd_with_group[,c(1,2)]分组
-if (args$GEO_variance_analysis==T){
-      #判断矩阵是否log2转换-----------------------------------------------------------
-  is_log2_transformed <- function(exp_matrix, 
-                                  median_threshold = 30, 
-                                  max_threshold = 1000,
-                                  prob = 0.99) {
-    # 核心判断逻辑 -------------------------------------------------------------
-    matrix_values <- as.numeric(as.matrix(exp_matrix))
-    q99 <- quantile(matrix_values, probs = prob, na.rm = TRUE)
-    med <- median(matrix_values, na.rm = TRUE)
-    has_negative <- any(matrix_values < 0)
-    
-    # 判断条件（可扩展）
-    condition_logged <- (q99 < max_threshold) && 
-      (med < median_threshold) && 
-      (!has_negative)
-    
-    cat("Matrix diagnostic:\n",
-        "  -", prob*100, "% quantile:", round(q99, 2), "\n",
-        "  - Median:", round(med, 2), "\n",
-        "  - Contains negative values:", has_negative, "\n",
-        "  - Suggested log2 status:", ifelse(condition_logged, "Likely LOGGED", "Likely UNLOGGED"), "\n")
-    return(condition_logged)
-  }
-  auto_log2_transform <- function(exp_matrix, 
-                                  offset = 1, 
-                                  verbose = TRUE) {
-    # 检查是否为矩阵或数据框
-    if (!is.matrix(exp_matrix) && !is.data.frame(exp_matrix)) {
-      stop("输入必须是矩阵或数据框")
-    }
-    
-    # 判断是否需要转换
-    needs_log <- !is_log2_transformed(exp_matrix)  # 使用之前定义的判断函数
-    
-    if (needs_log) {
-      if (verbose) cat("\n检测到数据可能需要 log2 转换...\n")
+    cli_li("Gene symbol去重取平均 成功")
+    exp_matrix <- as.matrix(exp_unique[, -1]) 
+    #判断矩阵是否log2转换-----------------------------------------------------------
+    is_log2_transformed <- function(exp_matrix, 
+                                    median_threshold = 30, 
+                                    max_threshold = 1000,
+                                    prob = 0.99) {
+      # 核心判断逻辑 -------------------------------------------------------------
+      matrix_values <- as.numeric(as.matrix(exp_matrix))
+      q99 <- quantile(matrix_values, probs = prob, na.rm = TRUE)
+      med <- median(matrix_values, na.rm = TRUE)
+      has_negative <- any(matrix_values < 0)
       
-      # 处理非正数值（添加偏移量）
-      min_value <- min(exp_matrix, na.rm = TRUE)
-      if (min_value <= 0) {
-        if (verbose) cat("检测到非正数值，添加偏移量", offset, "进行转换\n")
-        exp_matrix <- exp_matrix + offset
+      # 判断条件（可扩展）
+      condition_logged <- (q99 < max_threshold) && 
+        (med < median_threshold) && 
+        (!has_negative)
+      
+      cat("Matrix diagnostic:\n",
+          "  -", prob*100, "% quantile:", round(q99, 2), "\n",
+          "  - Median:", round(med, 2), "\n",
+          "  - Contains negative values:", has_negative, "\n",
+          "  - Suggested log2 status:", ifelse(condition_logged, "Likely LOGGED", "Likely UNLOGGED"), "\n")
+      return(condition_logged)
+    }
+    auto_log2_transform <- function(exp_matrix, 
+                                    offset = 1, 
+                                    verbose = TRUE) {
+      # 检查是否为矩阵或数据框
+      if (!is.matrix(exp_matrix) && !is.data.frame(exp_matrix)) {
+        stop("输入必须是矩阵或数据框")
       }
       
-      # 执行 log2 转换
-      if (verbose) cat("正在执行 log2 转换...\n")
-      exp_matrix <- log2(exp_matrix)
-    } else {
-      if (verbose) cat("\n数据已符合 log2 转换特征，无需处理\n")
+      # 判断是否需要转换
+      needs_log <- !is_log2_transformed(exp_matrix)  # 使用之前定义的判断函数
+      
+      if (needs_log) {
+        if (verbose) cat("\n检测到数据可能需要 log2 转换...\n")
+        
+        # 处理非正数值（添加偏移量）
+        min_value <- min(exp_matrix, na.rm = TRUE)
+        if (min_value <= 0) {
+          if (verbose) cat("检测到非正数值，添加偏移量", offset, "进行转换\n")
+          exp_matrix <- exp_matrix + offset
+        }
+        
+        # 执行 log2 转换
+        if (verbose) cat("正在执行 log2 转换...\n")
+        exp_matrix <- log2(exp_matrix)
+      } else {
+        if (verbose) cat("\n数据已符合 log2 转换特征，无需处理\n")
+      }
+      
+      return(exp_matrix)
     }
-    
-    return(exp_matrix)
-  }
-  exp_matrix2=auto_log2_transform(exp_matrix)
-  #---------------------------------------------分析
-  group_list <- pd_with_group$group
+    exp_matrix2=auto_log2_transform(exp_matrix)
+write.csv(exp_matrix2,paste0(GSEnumber,"_matrix.csv"))
+#-----------------------------------------------------------------------#analysis
+
+if (args$GEO_variance_analysis==T){
+  group_list <- pd$group
   design <- model.matrix(~0+factor(group_list))
   colnames(design)=levels(factor(group_list))
   contrast_matrix<-makeContrasts(Tumor-Normal,levels = design)
@@ -245,7 +237,7 @@ if (args$GEO_variance_analysis==T){
   #绘制热图
   cg=rownames(DiffEG[DiffEG$adj.P.Val<0.05,])
   n=exp_matrix2[cg,]
-  annotation_col=pd_with_group%>%select(group)
+  annotation_col=pd%>%select(group)
   library(pheatmap)
   if (length(cg)>30){
   pdf(paste0(GSEnumber,"_heatmap.pdf"))
@@ -264,7 +256,7 @@ if (args$GEO_variance_analysis==T){
   }
 }
 ###富集分析
-if(args$enrich_analysis=T){
+if(args$enrich_analysis==T){
   if(exists("DiffEG")){
     library(clusterProfiler)
     library(ggthemes)
