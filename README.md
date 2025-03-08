@@ -45,8 +45,8 @@ Rscript geo_group_analysis2.R -i /home/baiqiang/GEO_STUDY/mul/GSE79768_group.xls
 Rscript geo_group_analysis2.R -i /home/baiqiang/GEO_STUDY/mul/GSE41177_group.xls -c title -f "AF_*" --overwrite
 ```
 **step2：geo_pipeline分析(第一次运行，未剔除WGCNA分析中的离群样本)**  
-这次运行会对三个数据集进行预处理以及合并处理，生成合并后表型分组数据。随后执行limma差异分析和wgcna分析。  
-但是无法提前得知样本剪切高度，需要等这次流程中WGCNA分析执行完毕以后。查看Sample_clustering_to_detect_outliers.pdf确认是否存在离群样本。  
+这次运行会对三个数据集进行预处理（探针ID转Gene symbol，对转换完成的Gene symbol去重并计算平均值，矩阵合并，生成合并后的表型分组数据）以及后续分析。  
+第一次运行时，无法提前得知WGCNA分析中的样本剪切高度，需要等这次流程中WGCNA分析执行完毕以后，查看Sample_clustering_to_detect_outliers.pdf确认是否存在离群样本。  
 在Sample_clustering_to_detect_outliers.pdf生成并发现离群样本后，可以提前终止流程继续往下执行，从而提高效率。  
 如果未发现离群样本，step2可以执行到底，无需进行step3。  
 --logfc 0.5 筛选标准：limma分析的差异基因logfc绝对值 默认1  
@@ -56,7 +56,7 @@ Rscript geo_group_analysis2.R -i /home/baiqiang/GEO_STUDY/mul/GSE41177_group.xls
 sh GEO_multiple.sh -d /home/baiqiang/GEO_STUDY/mul --logfc 0.5 --fdr 0.05 GSE41177 GSE31821 GSE79768
 ```
 **step3：geo_pipeline分析(第二次运行，剔除WGCNA分析中的离群样本)**  
-第二次执行时，会自动沿用第一次执行时的预处理结果，从limma分析开始跑。  
+第二次执行时，会自动跨过预处理沿用第一次执行时的预处理结果，从limma分析开始运行。  
 在第一次运行中Sample_clustering_to_detect_outliers.pdf中发现离群样本后，在第二次运行时使用--sample_cut_height 设置剪切高度进行进行离群样本剔除。  
 ```
 #bash
@@ -182,6 +182,10 @@ fi
 #针对WGCNA分析
 -d "${DATA_HOME}/WGCNA_ip_gene.csv"
 ```
+包括但不仅限于上述内容可以进行流程更改。。。  
+## 自定义参数
+自定义阈值或相关指标可以在每部分的对应R脚本中进行修改  
+相关内容在各自的R脚本中存在对应的注释  
 ## ⚠️ 注意事项
 1. **富集分析需要在联网条件下进行**：
 2. **默认情况下，富集分析和PPI分析参考基因和蛋白基于人类物种**
