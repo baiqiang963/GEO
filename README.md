@@ -1,6 +1,12 @@
-# GEO 数据分析自动化脚本
-GEO data detect and integration script
-The script simplifies the GEO data mining process. Its main functions include log2 count detection, PCA analysis，limma difference analysis, and clusterProfier enrichment analysis.
+# GEO数据分析管道
+这是一套可自定义参数和步骤的高度自动化的对多个GEO数据进行合并分析的管道流程。
+功能：1.GEO数据预处理（探针ID转Gene symbol，自动检测并修正log2计数，多个GEO数据合并并生成对应分组信息）,
+2.limma差异分析和WGCNA分析筛选差异基因,
+3.机器学习筛选特征：LASSO、SVM、随机森林,
+4.GO和KEGG分析，
+5.PPI分析，
+6.免疫浸润分析。
+
 ## 第一次运行前的环境准备
 ### R>=4.2.0
 ### 将PPI分析所需的蛋白参考文件下载到脚本所在目录中(9606是人类的蛋白参考文件代号)
