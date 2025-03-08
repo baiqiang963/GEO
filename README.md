@@ -64,7 +64,7 @@ module load R-4.2.0
 sh GEO_multiple.sh -d /home/baiqiang/GEO_STUDY/mul --logfc 0.5 --fdr 0.05 --sample_cut_height 80 GSE41177 GSE31821 GSE79768
 ```
 
-##自定义分析流程
+## 自定义分析流程
 **修改GEO_multiple.sh中的参数可以改变分析流程：**
 *默认情况下，机器学习筛选特征是针对limma分析和WGCNA分析的交集基因来筛选特征。*
 ```
