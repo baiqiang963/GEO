@@ -1,29 +1,16 @@
 # GEO 数据分析自动化脚本
 GEO data detect and integration script
 The script simplifies the GEO data mining process. Its main functions include log2 count detection, PCA analysis，limma difference analysis, and clusterProfier enrichment analysis.
-
-## R package environment for GEO_detect.R
-library(optparse)
-library(dplyr)
-library(tidyr)
-library(tidyverse)
-library(stringr)
-library(janitor)
-library(GEOquery) 
-library(limma) 
-library(affy)
-library(FactoMineR) 
-library(factoextra)
-library(ggplot2)
-library(ggrepel)
-library(pheatmap)
-library(clusterProfiler)
-library(ggthemes)
-library(org.Hs.eg.db)
-library(dplyr)
-library(ggplot2)
-library(stringr)
-library(enrichplot)
+## 第一次运行前的环境准备
+### 将PPI分析所需的蛋白参考文件下载到脚本所在目录中(9606是人类的蛋白参考文件代号)
+```
+cd your_code_dir_path
+wget https://stringdb-static.org/download/protein.aliases.v11.5/9606.protein.aliases.v11.5.txt.gz
+wget https://stringdb-static.org/download/protein.links.v11.5/9606.protein.links.v11.5.txt.gz
+wget https://stringdb-static.org/download/protein.info.v11.5/9606.protein.info.v11.5.txt.gz
+```
+### 依赖R包检查并安装
+Rscript check.R
 ###  You can run the following code to detect and install missing front-end R packages in R:
 ```
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
