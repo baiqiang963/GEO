@@ -11,10 +11,11 @@ wget https://stringdb-static.org/download/protein.aliases.v11.5/9606.protein.ali
 wget https://stringdb-static.org/download/protein.links.v11.5/9606.protein.links.v11.5.txt.gz
 wget https://stringdb-static.org/download/protein.info.v11.5/9606.protein.info.v11.5.txt.gz
 ```
-### 依赖R包检查并安装
+### 依赖R包缺失检查
 ```
-#R
-list=
+#bash
+module load R-4.2.0
+Rscript check.R
 ```
 ###  You can run the following code to detect and install missing front-end R packages in R:
 ```
