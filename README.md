@@ -13,9 +13,8 @@ wget https://stringdb-static.org/download/protein.info.v11.5/9606.protein.info.v
 ```
 ### 依赖R包检查并安装
 ```
-#bash
-module R
-Rscript check.R
+#R
+list=
 ```
 ###  You can run the following code to detect and install missing front-end R packages in R:
 ```
