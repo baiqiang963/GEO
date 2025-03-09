@@ -191,7 +191,8 @@ fi
 2. **默认情况下，富集分析和PPI分析参考基因和蛋白基于人类物种**
 3. **limma分析和WGCNA分析的交集基因结果limma_wgcna_merge_gene.csv在机器学习脚本的开头代码中生成，如有需要可以手动取交集，生成一个命名为limma_wgcna_merge_gene.csv的无行名，列名为gene，列内容为gene symbol的table**
 
-## 📜 许可证
-本项目采用 [GPL-3.0 license](LICENSE)，商业使用需额外授权
+## 📜 引用
+1. 请自觉根据GEO_pipeline分析使用到的R包进行文献引用
+2. Acknowledgements："We would like to express our gratitude to Baiqiang Xue and the team at the The Biomedical Sciences Institute of Qingdao University (Qingdao Branch of SJTU Bio-X Institutes) for providing the GEO_pipeline, which was instrumental in the data analysis for this study."
 
 
