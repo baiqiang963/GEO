@@ -4,7 +4,7 @@ required_packages <- unique(c(
   "tidyr", "tidyverse", "janitor", "limma", "affy", "ggplot2", "pheatmap", 
   "sva", "RColorBrewer", "glmnet", "randomForest", "caret", "cowplot", 
   "ggplotify", "VennDiagram", "WGCNA", "clusterProfiler", "ggthemes", 
-  "org.Hs.eg.db", "enrichplot", "STRINGdb", "igraph", "ggraph"
+  "org.Hs.eg.db", "enrichplot", "STRINGdb", "igraph", "ggraph","CIBERSORT"
 ))
 
 # 初始化一个空向量来存储未安装的包

@@ -263,8 +263,7 @@ if [[ -f "$ENRICH_SCRIPT" ]]; then
   
   # 执行富集分析
   Rscript "$ENRICH_SCRIPT" \
-          -d "${DATA_HOME}/limma_wgcna_merge_gene.csv" \
-  
+          -d "${DATA_HOME}/limma_wgcna_merge_gene.csv"
   # 检查执行结果
   if [[ $? -eq 0 ]]; then
     echo "富集分析执行成功"
@@ -280,7 +279,7 @@ PPI_SCRIPT="$(dirname "$0")/PPI.R"
 
 # 检查脚本是否存在
 if [[ -f "$PPI_SCRIPT" ]]; then
-  echo "发现富集分析脚本: $PPI_SCRIPT，开始执行..."
+  echo "发现PPI分析脚本: $PPI_SCRIPT，开始执行..."
   
   # 执行PPI分析
   Rscript "$PPI_SCRIPT" \
@@ -294,6 +293,26 @@ if [[ -f "$PPI_SCRIPT" ]]; then
     echo "警告：PPI分析执行失败，请检查日志"
   fi
 else
-  echo "警告：未找到富集分析脚本: $PPI_SCRIPT，跳过执行"
+  echo "警告：未找到PPI分析脚本: $PPI_SCRIPT，跳过执行"
+fi
+
+# 定义免疫浸润分析脚本路径
+CB_SCRIPT="$(dirname "$0")/CIBERSORT.R"
+
+# 检查脚本是否存在
+if [[ -f "$CB_SCRIPT" ]]; then
+  echo "发现免疫浸润分析脚本: $PPI_SCRIPT，开始执行..."
+  
+  # 执行免疫浸润分析
+  Rscript "$CB_SCRIPT" \
+          -d "${DATA_HOME}/batch_corrected_matrix.csv"
+  # 检查执行结果
+  if [[ $? -eq 0 ]]; then
+    echo "免疫浸润分析执行成功"
+  else
+    echo "警告：免疫浸润分析执行失败，请检查日志"
+  fi
+else
+  echo "警告：未找到免疫浸润分析脚本: $CB_SCRIPT，跳过执行"
 fi
 echo "▨▨▨ 所有分析流程执行完毕 ▨▨▨"
