@@ -30,7 +30,7 @@ cli_h1("针对{basename(args$data_dir)}执行PPI分析")
 cli_alert_info("PPI分析，仅适用人类基因和蛋白，如需分析其他物种须分别更改PPI.R中的参考基因数据库和蛋白参考文件输入地址")
 #9606是人类，小鼠是10090
 
-string_db <- STRINGdb$new(version="11.5",species=9606,score_threshold=args$score_threshold,input_directory=args$STRINGdb)
+string_db <- STRINGdb$new(version="11.5",species=9606,score_threshold=as.numeric(args$score_threshold),input_directory=args$STRINGdb)
 cli_alert_success("创建STRINGdb对象成功")
 setwd(dirname(args$data_dir))
 gene=fread(args$data_dir)
