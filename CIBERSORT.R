@@ -18,7 +18,6 @@ option_list <- list(
 parser <- OptionParser(usage = "%prog -d batch_corrected_matrix.csv -t merged_trait_data.csv -o 输出文件夹路径", 
                        option_list = option_list)
 args <- parse_args(parser)
-args$data_dir="/home/baiqiang/GEO_STUDY/mul/batch_corrected_matrix.csv"
 expr_dt <- fread(args$data_dir)
 expr_mat <- as.matrix(expr_dt, rownames = "ID")
 # 伪计数
