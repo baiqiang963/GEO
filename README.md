@@ -31,8 +31,8 @@ Rscript check.R
 ```
 ## 🚀 快速开始示例
 **step1：使用以下脚本做好每个GEO数据集的性状分组case/control**  
-geo_group_analysis.R -n 数据集的GSE编号 -d matrix和soft文件所在的同一目录
-geo_group_analysis2.R -i 由geo_group_analysis.R生成潜在分组指标表格 -c 指示性状的列/可以被用来分组的列的列名 -f 模糊匹配指示性状的列/可以被用来分组的列中case性状的关键词  
+geo_group_analysis.R `-n` 数据集的GSE编号 `-d` GEO matrix和soft文件所在的同一目录
+geo_group_analysis2.R `-i` 由geo_group_analysis.R生成潜在分组指标表格 `-c` 指示性状的列/可以被用来分组的列的列名 `-f` 模糊匹配指示性状的列/可以被用来分组的列中case性状的关键词  
 ```
 #bash
 module load R-4.2.0
