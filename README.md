@@ -36,9 +36,9 @@ geo_group_analysis2.R `-i` 由geo_group_analysis.R生成潜在分组指标表格
 ```
 #bash
 module load R-4.2.0
-Rscript geo_group_analysis.R -n GSE31821 -d ./out
-Rscript geo_group_analysis.R -n GSE41177 -d ./out
-Rscript geo_group_analysis.R -n GSE79768 -d ./out
+Rscript geo_group_analysis.R -n test/GSE31821 -d ./out
+Rscript geo_group_analysis.R -n test/GSE41177 -d ./out
+Rscript geo_group_analysis.R -n test/GSE79768 -d ./out
 Rscript geo_group_analysis2.R -i ./out/GSE31821_group.xls -c characteristics_ch1 -f "patient disease status: atrial fibrillation patient" --overwrite
 Rscript geo_group_analysis2.R -i ./out/GSE79768_group.xls -c characteristics_ch1.3 -f "condition: Atrial Fibrillation" --overwrite
 Rscript geo_group_analysis2.R -i ./out/GSE41177_group.xls -c title -f "AF_*" --overwrite
