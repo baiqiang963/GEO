@@ -14,6 +14,7 @@
 6. **免疫浸润分析（自动使用矩阵的原始计数进行分析）**
 ## 第一次运行前的环境准备
 ### R>=4.2.0
+![](https://github.com/baiqiang963/GEO/blob/main/images/pipeline.png)
 ### 将PPI分析所需的蛋白参考文件下载到管道所在目录中
 9606是人类的蛋白参考文件代号,如果你的转录组数据是其他物种的，可以在https://stringdb-static.org网站中自行下载并在管道中进行修改。
 ```
@@ -46,7 +47,7 @@ Rscript geo_group_analysis2.R -i ./out/GSE41177_group.xls -c title -f "AF_*" --o
 **step2：geo_pipeline分析(第一次运行，未剔除WGCNA分析中的离群样本)**  
 这次运行会对三个数据集进行预处理（探针ID转Gene symbol，对转换完成的Gene symbol去重并计算平均值，矩阵合并，生成合并后的表型分组数据）以及后续分析。  
 第一次运行时，无法提前得知WGCNA分析中的样本剪切高度，需要等这次流程中WGCNA分析执行完毕以后，查看Sample_clustering_to_detect_outliers.pdf确认是否存在离群样本。  
-在Sample_clustering_to_detect_outliers.pdf生成并发现离群样本后，可以提前终止流程继续往下执行，从而提高效率。  
+在Sample_clustering_to_detect_outliers.pdf生成并发现离群样本后，可以使用linux的组合键`ctrl+z`提前终止流程继续往下执行，从而提高效率。  
 如果未发现离群样本，step2可以执行到底，无需进行step3。  
 `--logfc` 0.5 筛选标准：limma分析的差异基因logfc绝对值 默认1  
 `--fdr` 0.05 筛选标准：limma分析的差异基因fdr值 默认0.05  
