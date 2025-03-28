@@ -13,13 +13,13 @@
 5. **PPI分析**
 6. **免疫浸润分析（自动使用矩阵的原始计数进行分析）**
 ## 第一次运行前的环境准备
-### R>=4.2.0
-![](https://github.com/baiqiang963/GEO/blob/main/images/pipeline.png)
+### 设置R(version >= 4.2.0)模块
+![](https://github.com/baiqiang963/GEO/blob/main/images/1743146222428.jpg)
 ### 将PPI分析所需的蛋白参考文件下载到管道所在目录中
 9606是人类的蛋白参考文件代号,如果你的转录组数据是其他物种的，可以在https://stringdb-static.org网站中自行下载并在管道中进行修改。
 ```
 #bash
-cd your_code_dir_path
+cd ./GEO
 wget https://stringdb-static.org/download/protein.aliases.v11.5/9606.protein.aliases.v11.5.txt.gz
 wget https://stringdb-static.org/download/protein.links.v11.5/9606.protein.links.v11.5.txt.gz
 wget https://stringdb-static.org/download/protein.info.v11.5/9606.protein.info.v11.5.txt.gz
@@ -37,12 +37,13 @@ geo_group_analysis2.R `-i` 由geo_group_analysis.R生成潜在分组指标表格
 ```
 #bash
 module load R-4.2.0
-Rscript geo_group_analysis.R -n test/GSE31821 -d ./out
-Rscript geo_group_analysis.R -n test/GSE41177 -d ./out
-Rscript geo_group_analysis.R -n test/GSE79768 -d ./out
-Rscript geo_group_analysis2.R -i ./out/GSE31821_group.xls -c characteristics_ch1 -f "patient disease status: atrial fibrillation patient" --overwrite
-Rscript geo_group_analysis2.R -i ./out/GSE79768_group.xls -c characteristics_ch1.3 -f "condition: Atrial Fibrillation" --overwrite
-Rscript geo_group_analysis2.R -i ./out/GSE41177_group.xls -c title -f "AF_*" --overwrite
+cd ./test
+Rscript ./GEO/geo_group_analysis.R -n GSE31821
+Rscript ./GEO/geo_group_analysis.R -n GSE41177
+Rscript ./GEO/geo_group_analysis.R -n GSE79768
+Rscript ./GEO/geo_group_analysis2.R -i GSE31821_group.xls -c characteristics_ch1 -f "patient disease status: atrial fibrillation patient" --overwrite
+Rscript ./GEO/geo_group_analysis2.R -i GSE79768_group.xls -c characteristics_ch1.3 -f "condition: Atrial Fibrillation" --overwrite
+Rscript ./GEO/geo_group_analysis2.R -i GSE41177_group.xls -c title -f "AF_*" --overwrite
 ```
 **step2：geo_pipeline分析(第一次运行，未剔除WGCNA分析中的离群样本)**  
 这次运行会对三个数据集进行预处理（探针ID转Gene symbol，对转换完成的Gene symbol去重并计算平均值，矩阵合并，生成合并后的表型分组数据）以及后续分析。  
@@ -60,8 +61,7 @@ sh GEO_multiple.sh -d ./out --logfc 0.5 --fdr 0.05 GSE41177 GSE31821 GSE79768
 在第一次运行中Sample_clustering_to_detect_outliers.pdf中发现离群样本后，在第二次运行时使用`--sample_cut_height`设置剪切高度进行离群样本剔除。  
 ```
 #bash
-module load R-4.2.0
-sh GEO_multiple.sh -d ./out --logfc 0.5 --fdr 0.05 --sample_cut_height 80 GSE41177 GSE31821 GSE79768
+sh ./GEO/GEO_multiple.sh -d ./out --logfc 0.5 --fdr 0.05 --sample_cut_height 80 GSE41177 GSE31821 GSE79768
 ```
 
 ## 自定义分析流程
